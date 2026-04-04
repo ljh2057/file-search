@@ -1,14 +1,12 @@
 # ARM64 / Multi-arch compatible Dockerfile for file-search
-# 使用官方多架构 OpenJDK 镜像替代硬编码 x86 JDK，支持 linux/amd64 和 linux/arm64
+# JAR 直接从官方镜像提取，无需从源码编译
 FROM eclipse-temurin:11-jre
 
-# 创建工作目录
 RUN mkdir -p /fsearch/files /fsearch/data /fsearch/cache
 
-# 拷贝构建产物
-COPY target/file-search-1.0.6-SNAPSHOT.jar /fsearch/file-search-1.0.6-SNAPSHOT.jar
+# JAR 由 workflow 从官方镜像提取后放在当前目录
+COPY file-search-1.0.6-SNAPSHOT.jar /fsearch/file-search-1.0.6-SNAPSHOT.jar
 
-# 环境变量（与原版保持一致）
 ENV USER_NAME=admin \
     PASSWORD=123456 \
     KK_BASE_URL=default \
@@ -18,12 +16,10 @@ ENV USER_NAME=admin \
     LANG=zh_CN.UTF-8 \
     LC_ALL=zh_CN.UTF-8
 
-# 挂载卷
 VOLUME /fsearch/files
 VOLUME /fsearch/data
 VOLUME /fsearch/cache
 
-# 暴露端口
 EXPOSE 8012
 
 ENTRYPOINT ["java", "-jar", "/fsearch/file-search-1.0.6-SNAPSHOT.jar"]
