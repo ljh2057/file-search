@@ -1,7 +1,21 @@
 # ARM64 / Multi-arch compatible Dockerfile for file-search
-# JAR 直接从官方镜像提取，无需从源码编译
 FROM eclipse-temurin:11-jre
 
+# 安装 LibreOffice 及依赖（支持 arm64/amd64 多架构）
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libreoffice \
+        libreoffice-writer \
+        libreoffice-calc \
+        libreoffice-impress \
+        libxrender1 libxinerama1 libxt6 libxext-dev \
+        libfreetype6-dev libcairo2 libcups2 libx11-xcb1 libnss3 \
+        fonts-wqy-zenhei fonts-wqy-microhei \
+        fontconfig && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# 创建工作目录
 RUN mkdir -p /fsearch/files /fsearch/data /fsearch/cache
 
 # JAR 由 workflow 从官方镜像提取后放在当前目录
